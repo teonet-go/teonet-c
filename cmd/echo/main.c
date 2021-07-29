@@ -16,7 +16,7 @@
 
 char *appName    = "Teonet echo client/server C sample application";
 char *appShort   = "teoecho-c";
-char *appVersion = "0.2.0";
+char *appVersion = "0.2.1";
 
 char *echoServer = "dBTgSEHoZ3XXsOqjSkOTINMARqGxHaXIDxl";
 
