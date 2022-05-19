@@ -1,4 +1,4 @@
-// Copyright 2021 Kirill Scherba <kirill@scherba.ru>. All rights reserved.
+// Copyright 2021-22 Kirill Scherba <kirill@scherba.ru>. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -49,7 +49,7 @@ func teoNew(c_appShort *C.char) (teoKey C.int) {
 	/* params.appShort, params.port, reader, teonet.Log(), "NONE",
 	params.showTrudp, params.logLevel, teonet.LogFilterT(params.logFilter */
 	if err != nil {
-		teo.Log().Println("can't init Teonet, error:", err)
+		teo.Log().Debug.Println("can't init Teonet, error:", err)
 		return
 	}
 	return teoc.add(teo)

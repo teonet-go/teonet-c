@@ -1,8 +1,8 @@
-// Copyright 2021 Kirill Scherba <kirill@scherba.ru>. All rights reserved.
+// Copyright 2021-22 Kirill Scherba <kirill@scherba.ru>. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Teonet v4 C echo client example. 
+// Teonet v5 C echo client example. 
 // This application connect to teonet, than connect to echo server send/receive 
 // ansver every 5 seconds.
 //
