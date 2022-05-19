@@ -50,7 +50,7 @@ int main() {
 
     // Connect to teonet
     unsigned char ok = teoConnect(teo);
-    if (!teo) {
+    if (!ok) {
         printf("can't initialize teonet\n");
         return 1;
     }
@@ -62,7 +62,7 @@ int main() {
     // Connect to teonet echo server
     // ok = teoConnectTo(teo, echoServer);
     ok = teoConnectToCb(teo, echoServer, &reader);
-    if (!teo) {
+    if (!ok) {
         printf("can't connect to echo server\n");
         return 1;
     }
