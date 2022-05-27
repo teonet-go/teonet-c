@@ -2,5 +2,6 @@ teoapi-c
 teoecho-c
 teocommand-c
 teoechoerve-c
+teocommandserve-c
 lib/libteonet.h
 lib/libteonet.so

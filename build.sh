@@ -39,4 +39,13 @@ gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoechoerve-c
 cd ../..
 
 # Run echo server
-cmd/echoserve/teoechoerve-c
+# cmd/echoserve/teoechoerve-c
+
+# Build command server
+cd cmd/commandserve
+rm teocommandserve-c
+gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommandserve-c
+cd ../..
+
+# Run command server
+cmd/commandserve/teocommandserve-c

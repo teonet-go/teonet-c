@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Teonet v4 C library
+// Teonet v5 C library
 //
 //  build: go build -buildmode c-shared -o libteonet.so .
 //
@@ -18,6 +18,7 @@ package main
 // unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err, void *user_data);
 //
 // void safe_printf();
+// void *teoParseCmd(void *c_data, int c_data_len, unsigned char *c_cmd, int *c_cmd_data_len);
 //
 import "C"
 import (
@@ -74,6 +75,8 @@ func teoNewCb(c_appShort *C.char, c_reader unsafe.Pointer) (c_teo C.int) {
 	return _teoNew(c_appShort, c_reader)
 }
 
+// _teoNew start teonet client with or without reader, return digital key to
+// use Teonet pointer, or zero at error
 func _teoNew(c_appShort *C.char, c_reader unsafe.Pointer) (c_teo C.int) {
 	appShort := C.GoString(c_appShort)
 	var teo *teonet.Teonet
@@ -303,7 +306,7 @@ func teoApiSendCmdToStrCb(c_teoApi C.int, c_cmd *C.char, c_data unsafe.Pointer,
 		user_data)
 }
 
-// teoApiSendCmdToStrCb generic send api command with data to teonet peer where
+// _teoApiSendCmdToStrCb generic send api command with data to teonet peer where
 // cmd may be byte or string, return true if ok
 func _teoApiSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
 	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer,
