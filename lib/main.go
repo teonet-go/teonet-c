@@ -57,7 +57,8 @@ func teoCVersion() (c_address *C.char) {
 	return C.CString(version)
 }
 
-// teoNew start teonet client, return teo pointer to Teonet
+// teoNew start teonet client, return digital key to use Teonet pointer, or zero
+// at error
 //export teoNew
 func teoNew(c_appShort *C.char) (teoKey C.int) {
 	appShort := C.GoString(c_appShort)
@@ -115,7 +116,6 @@ func teoConnectTo(c_teo C.int, c_address *C.char) (ok C.uchar) {
 // reader will receive data from peer
 //export teoConnectToCb
 func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok C.uchar) {
-
 	teo, ok := teoc.get(c_teo)
 	if ok == 0 {
 		return
@@ -187,7 +187,26 @@ func teoSendCmdTo(c_teo C.int, c_address *C.char, c_cmd C.uchar,
 	return
 }
 
+// teoWaitForever wait forever
 //export teoWaitForever
 func teoWaitForever(c_teo C.int) {
 	select {}
+}
+
+// teoApiClientNew create and return pointer to new API Client interface, it
+// return nil at error
+//export teoApiClientNew
+func teoApiClientNew(c_teo C.int, c_address *C.char) (api unsafe.Pointer) {
+	teo, ok := teoc.get(c_teo)
+	if ok == 0 {
+		return
+	}
+	address := C.GoString(c_address)
+	apicli, err := teo.NewAPIClient(address)
+	if err != nil {
+		return
+	}
+	api = unsafe.Pointer(apicli)
+	// teoc.add(apicli)
+	return
 }

@@ -5,18 +5,29 @@ cd lib
 go build -buildmode c-shared -o libteonet.so .
 cd ..
 
-# Build echo
+# Build echo client
 cd cmd/echo
+rm teoecho-c
 gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoecho-c
 cd ../..
 
-# Run echo
+# Run echo client
 # cmd/echo/teoecho-c
 
-# Build command
+# Build command client
 cd cmd/command
+rm teocommand-c
 gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommand-c
 cd ../..
 
-# Run echo command
+# Run echo command clien
 # cmd/command/teocommand-c
+
+# Build api client
+cd cmd/api
+rm teoapi-c
+gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoapi-c
+cd ../..
+
+# Run api client
+cmd/api/teoapi-c

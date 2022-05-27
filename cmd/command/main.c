@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 // Teonet v5 C echo command client example.
-// This application connect to teonet, than connect to echo server send/receive
-// ansver every 3 seconds.
+// This application connect to teonet, than connect to echo command server
+// send/receive ansver every 3 seconds.
 //
 // build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommand-c
 //
@@ -14,7 +14,7 @@
 
 #include "../../lib/libteonet.h"
 
-char *appName = "Teonet echo command client/server C sample application";
+char *appName = "Teonet echo command client C sample application";
 char *appShort = "teocommand-c";
 char *echoComServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
@@ -59,7 +59,7 @@ int main() {
   char *address = teoAddress(teo);
   printf("Teonet address: %s\n", address);
 
-  // Connect to teonet echo server
+  // Connect to teonet command echo server
   // ok = teoConnectTo(teo, echoComServer);
   ok = teoConnectToCb(teo, echoComServer, &reader);
   if (!ok) {
