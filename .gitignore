@@ -1,3 +1,4 @@
 cmd/echo/teoecho-c
+cmd/command/teocommand-c
 lib/libteonet.h
 lib/libteonet.so

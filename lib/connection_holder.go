@@ -4,7 +4,7 @@ import "C"
 import (
 	"sync"
 
-	"github.com/kirill-scherba/teonet"
+	"github.com/teonet-go/teonet"
 )
 
 // Create teonet-c connections holder

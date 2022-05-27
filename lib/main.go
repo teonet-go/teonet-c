@@ -20,12 +20,14 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/kirill-scherba/teonet"
+	"github.com/teonet-go/teonet"
 )
 
-func main() {
+const (
+	version = "0.2.1"
+)
 
-}
+func main() {}
 
 // teoEvData is Teonet Event Data constant
 //export teoEvData
@@ -39,6 +41,20 @@ func teoLogo(c_appName *C.char, c_appVersion *C.char) {
 	appName := C.GoString(c_appName)
 	appVersion := C.GoString(c_appVersion)
 	teonet.Logo(appName, appVersion)
+}
+
+// teoVersion return string with Teonet version, should be freed after using
+//export teoVersion
+func teoVersion() (c_address *C.char) {
+	version := teonet.Version
+	return C.CString(version)
+}
+
+// teoCVersion return string with Teonet-c (this library) version, should be
+// freed after using
+//export teoCVersion
+func teoCVersion() (c_address *C.char) {
+	return C.CString(version)
 }
 
 // teoNew start teonet client, return teo pointer to Teonet
@@ -105,10 +121,13 @@ func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok
 		return
 	}
 	address := C.GoString(c_address)
-	err := teo.ConnectTo(address, func(c *teonet.Channel, p *teonet.Packet, e *teonet.Event) (processed bool) {
+	err := teo.ConnectTo(address, func(c *teonet.Channel, p *teonet.Packet,
+		e *teonet.Event) (processed bool) {
+
 		if e.Event != teonet.EventData {
 			return
 		}
+
 		data := p.Data()
 		addr := C.CString(c.Address())
 		if C.runReaderCb(C.c_reader(c_reader),
@@ -131,7 +150,9 @@ func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok
 
 // teoSendTo send data to teonet peer, return true if ok
 //export teoSendTo
-func teoSendTo(c_teo C.int, c_address *C.char, c_data unsafe.Pointer, c_data_len C.int) (ok C.uchar) {
+func teoSendTo(c_teo C.int, c_address *C.char, c_data unsafe.Pointer,
+	c_data_len C.int) (ok C.uchar) {
+
 	teo, ok := teoc.get(c_teo)
 	if ok == 0 {
 		return
@@ -142,6 +163,27 @@ func teoSendTo(c_teo C.int, c_address *C.char, c_data unsafe.Pointer, c_data_len
 	if err == nil {
 		ok = 1
 	}
+
+	return
+}
+
+// teoSendCmdTo send command with data to teonet peer, return true if ok
+//export teoSendCmdTo
+func teoSendCmdTo(c_teo C.int, c_address *C.char, c_cmd C.uchar,
+	c_data unsafe.Pointer, c_data_len C.int) (ok C.uchar) {
+
+	teo, ok := teoc.get(c_teo)
+	if ok == 0 {
+		return
+	}
+	address := C.GoString(c_address)
+	data := C.GoBytes(c_data, c_data_len)
+	cmd := byte(c_cmd)
+	_, err := teo.Command(cmd, data).SendTo(address)
+	if err == nil {
+		ok = 1
+	}
+
 	return
 }
 

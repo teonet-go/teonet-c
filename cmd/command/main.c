@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Teonet v5 C echo client example.
+// Teonet v5 C echo command client example.
 // This application connect to teonet, than connect to echo server send/receive
 // ansver every 3 seconds.
 //
-// build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoecho-c
+// build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommand-c
 //
 #include <stdio.h>
 #include <string.h>
@@ -14,9 +14,9 @@
 
 #include "../../lib/libteonet.h"
 
-char *appName = "Teonet echo client/server C sample application";
-char *appShort = "teoecho-c";
-char *echoServer = "dBTgSEHoZ3XXsOqjSkOTINMARqGxHaXIDxl";
+char *appName = "Teonet echo command client/server C sample application";
+char *appShort = "teocommand-c";
+char *echoComServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
 // reader is a teonet channels callback function
 unsigned char reader(int teo, char *addr, void *data, int dataLen,
@@ -58,21 +58,22 @@ int main() {
   // Get and print your teonet address
   char *address = teoAddress(teo);
   printf("Teonet address: %s\n", address);
-  
+
   // Connect to teonet echo server
-  // ok = teoConnectTo(teo, echoServer);
-  ok = teoConnectToCb(teo, echoServer, &reader);
+  // ok = teoConnectTo(teo, echoComServer);
+  ok = teoConnectToCb(teo, echoComServer, &reader);
   if (!ok) {
     printf("can't connect to echo server\n");
     return 1;
   }
-  printf("Successfully connected to: %s\n\n", echoServer);
+  printf("Successfully connected to: %s\n\n", echoComServer);
 
   // Send messages to echo server
   for (;;) {
+    u_char cmd = 129;
     char *msg = "Hello from teonet-c!";
-    printf("send message '%s' to %s\n", msg, echoServer);
-    teoSendTo(teo, echoServer, msg, strlen(msg));
+    printf("send command %d message '%s' to %s\n", cmd, msg, echoComServer);
+    teoSendCmdTo(teo, echoComServer, cmd, msg, strlen(msg));
     sleep(3);
   }
 
