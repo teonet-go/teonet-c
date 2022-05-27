@@ -4,9 +4,9 @@ github.com/kirill-scherba/bslice v0.0.1 h1:2niA7JJooRQUPssfhQ4foDFZibc3bew2SiLca
 github.com/kirill-scherba/bslice v0.0.1/go.mod h1:oMZe3puDpM84VyI0S0qc2XrepyxKJIwEovbNRJPyuTw=
 github.com/kirill-scherba/stable v0.0.8 h1:m0GM5FCx1SJkai1o6kfQI0lKUWeupQGTicqb8EIPorg=
 github.com/kirill-scherba/stable v0.0.8/go.mod h1:Le2T16xIQmb9c9xzDVSqf7bWvpzo1pbDQLeD0s7qxZU=
-github.com/kirill-scherba/teonet v0.5.17 h1:Vo4BeWpwzUZCGBB/ahOQr389thNhG/QvIfbPuO57jFg=
-github.com/kirill-scherba/teonet v0.5.17/go.mod h1:iGbUh9Kq+q6Ik3eT32cahaH1b6njKLTzcOeVn1EE3iY=
-github.com/kirill-scherba/tru v0.0.4 h1:vegBE8gAy24nkh6zdvJaYUDfSuf7Qu55cHLEAw65g/Q=
-github.com/kirill-scherba/tru v0.0.4/go.mod h1:o9u6EG094nGMhnb3of7FoBb842m2iO7TzwXoV2c7RMM=
-golang.org/x/sys v0.0.0-20220519141025-dcacdad47464 h1:MpIuURY70f0iKp/oooEFtB2oENcHITo/z1b6u41pKCw=
-golang.org/x/sys v0.0.0-20220519141025-dcacdad47464/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+github.com/teonet-go/teonet v0.5.21 h1:rSmOLXNGRQern97CnqqTGj9ftHkXQ6JCTDDLvII8UiQ=
+github.com/teonet-go/teonet v0.5.21/go.mod h1:K9GwKxUET9gPZAauHpConZYYPuaBn00MtVGAK7IovUw=
+github.com/teonet-go/tru v0.0.7 h1:jOSi2kLEbYeTLneyCx1H5P8nuTH1sIlovRmn2NvkZTc=
+github.com/teonet-go/tru v0.0.7/go.mod h1:0K2Nha9PqmdP0RaaLLB94gaRBOGgrj464rx8vmPDpH4=
+golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a h1:dGzPydgVsqGcTRVwiLJ1jVbufYwmzD3LfVPLKsKg+0k=
+golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
