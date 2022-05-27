@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Teonet v5 C echo client example.
-// This application connect to teonet, than connect to echo server send/receive
-// ansver every 3 seconds.
+// Teonet v5 C echo server example.
+// This application connect to teonet, than wait echo clients send send message
+// and ansver it.
 //
-// build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoecho-c
+// build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoechoerve-c
 //
 #include <stdio.h>
 #include <string.h>
@@ -14,10 +14,8 @@
 
 #include "../../lib/libteonet.h"
 
-char *appName = "Teonet echo client C sample application";
-char *appShort = "teoecho-c";
-char *echoServer = "OwRwnLsS2RevOkVjgwDLpG9ToiK6N9IhDhN";
-// "dBTgSEHoZ3XXsOqjSkOTINMARqGxHaXIDxl";
+char *appName = "Teonet echo server C sample application";
+char *appShort = "teoechoserve-c";
 
 // reader is a teonet channels callback function
 unsigned char reader(int teo, char *addr, void *data, int dataLen,
@@ -32,8 +30,10 @@ unsigned char reader(int teo, char *addr, void *data, int dataLen,
   // function to safe printf() in multithreading application
   safe_printf();
 
-  printf("got data: '%s', data len: %d, from: %s\n\n", (char *)data, dataLen,
+  printf("got data: '%s', data len: %d, from: %s\n", (char *)data, dataLen,
          addr);
+  teoSendTo(teo, addr, data, dataLen);
+
   return 1;
 }
 
@@ -43,7 +43,7 @@ int main() {
   teoLogo(appName, teoCVersion());
 
   // Create teonet connector
-  int teo = teoNew(appShort);
+  int teo = teoNewCb(appShort, reader);
   if (!teo) {
     printf("can't initialize teonet\n");
     return 1;
@@ -60,25 +60,8 @@ int main() {
   char *address = teoAddress(teo);
   printf("Teonet address: %s\n", address);
 
-  // Connect to teonet echo server
-  ok = teoConnectToCb(teo, echoServer, &reader);
-  if (!ok) {
-    printf("can't connect to echo server\n");
-    return 1;
-  }
-  printf("Successfully connected to: %s\n\n", echoServer);
-
-  // Send messages to echo server
-  for (;;) {
-    char *msg = "Hello from teonet-c!";
-    printf("send message '%s' to %s\n", msg, echoServer);
-    teoSendTo(teo, echoServer, msg, strlen(msg));
-    sleep(3);
-  }
-
-  // In this example we loop forever in send message. If your application
-  // does not use forever loop like this than you can use the teoWaitForever
-  // func teoWaitForever(teo);
+  // Wait forever
+  teoWaitForever(teo);
 
   return 0;
 }

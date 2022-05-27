@@ -55,7 +55,6 @@ int main() {
   printf("Teonet address: %s\n", address);
 
   // Connect to teonet api echo server
-  // ok = teoConnectToCb(teo, apiServer, &reader);
   ok = teoConnectTo(teo, apiServer);
   if (!ok) {
     printf("can't connect to echo server\n");

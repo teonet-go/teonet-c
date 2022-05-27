@@ -30,4 +30,13 @@ gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoapi-c
 cd ../..
 
 # Run api client
-cmd/api/teoapi-c
+# cmd/api/teoapi-c
+
+# Build echo server
+cd cmd/echoserve
+rm teoechoerve-c
+gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoechoerve-c
+cd ../..
+
+# Run echo server
+cmd/echoserve/teoechoerve-c

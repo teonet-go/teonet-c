@@ -63,16 +63,62 @@ func teoCVersion() (c_address *C.char) {
 // teoNew start teonet client, return digital key to use Teonet pointer, or zero
 // at error
 //export teoNew
-func teoNew(c_appShort *C.char) (teoKey C.int) {
+func teoNew(c_appShort *C.char) (c_teo C.int) {
+	return _teoNew(c_appShort, nil)
+}
+
+// teoNewCb start teonet client with reader, return digital key to use Teonet
+// pointer, or zero at error
+//export teoNewCb
+func teoNewCb(c_appShort *C.char, c_reader unsafe.Pointer) (c_teo C.int) {
+	return _teoNew(c_appShort, c_reader)
+}
+
+func _teoNew(c_appShort *C.char, c_reader unsafe.Pointer) (c_teo C.int) {
 	appShort := C.GoString(c_appShort)
-	teo, err := teonet.New(appShort)
-	/* params.appShort, params.port, reader, teonet.Log(), "NONE",
-	params.showTrudp, params.logLevel, teonet.LogFilterT(params.logFilter */
+	var teo *teonet.Teonet
+	var err error
+	// Reader - receive and process incoming messages
+	reader := func(c *teonet.Channel, p *teonet.Packet, e *teonet.Event) (processed bool) {
+
+		// Prepare params
+		var data []byte
+		if e.Event == teonet.EventData {
+			data = p.Data()
+		}
+		dataPtr := unsafe.Pointer(nil)
+		if data != nil {
+			dataPtr = unsafe.Pointer(&data[0])
+		}
+		addr := C.CString(c.Address())
+
+		// Execute C callback
+		if C.runReaderCb(C.c_reader(c_reader),
+			c_teo,
+			addr,
+			dataPtr,
+			C.int(len(data)),
+			C.uchar(e.Event),
+		) != 0 {
+			processed = true
+		}
+		C.free(unsafe.Pointer(addr))
+
+		return
+	}
+
+	if c_reader != nil {
+		teo, err = teonet.New(appShort, reader)
+	} else {
+		teo, err = teonet.New(appShort)
+	}
 	if err != nil {
 		teo.Log().Debug.Println("can't init Teonet, error:", err)
 		return
 	}
-	return teoc.add(teo)
+
+	c_teo = teoc.add(teo)
+	return
 }
 
 // teoConnect connect to teonet, return true if ok
