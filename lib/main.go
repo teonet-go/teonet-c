@@ -14,8 +14,8 @@ package main
 // typedef unsigned char (*c_reader)(int teo, char *addr, void* data, int dataLen, unsigned char ev);
 // unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data, int dataLen, unsigned char ev);
 //
-// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen, char *err);
-// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err);
+// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen, char *err, void *user_data);
+// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err, void *user_data);
 //
 // void safe_printf();
 //
@@ -240,8 +240,28 @@ func teoApiSendCmdTo(c_teoApi C.int, c_cmd C.uchar,
 
 // teoApiSendCmdToCb send api command with data to teonet peer, return true if ok
 //export teoApiSendCmdToCb
-func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar,
-	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer) (ok C.uchar) {
+func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar, c_data unsafe.Pointer,
+	c_data_len C.int, c_reader unsafe.Pointer,
+	user_data unsafe.Pointer) (ok C.uchar) {
+	return _teoApiSendCmdToCb(c_teoApi, byte(c_cmd), c_data, c_data_len, c_reader,
+		user_data)
+}
+
+// teoApiSendCmdToStrCb send api command with data to teonet peer, return true if ok
+//export teoApiSendCmdToStrCb
+func teoApiSendCmdToStrCb(c_teoApi C.int, c_cmd *C.char, c_data unsafe.Pointer,
+	c_data_len C.int, c_reader unsafe.Pointer,
+	user_data unsafe.Pointer) (ok C.uchar) {
+	cmd := C.GoString(c_cmd)
+	return _teoApiSendCmdToCb(c_teoApi, cmd, c_data, c_data_len, c_reader,
+		user_data)
+}
+
+// teoApiSendCmdToStrCb generic send api command with data to teonet peer where
+// cmd may be byte or string, return true if ok
+func _teoApiSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
+	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer,
+	user_data unsafe.Pointer) (ok C.uchar) {
 
 	apicli, ok := teoc.getTeoApi(c_teoApi)
 	if ok == 0 {
@@ -249,7 +269,6 @@ func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar,
 	}
 
 	data := C.GoBytes(c_data, c_data_len)
-	cmd := byte(c_cmd)
 	_, err := apicli.SendTo(cmd, data, func(data []byte, err error) {
 
 		// Get error
@@ -270,6 +289,7 @@ func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar,
 			dataPtr,
 			C.int(len(data)),
 			c_err,
+			nil,
 		)
 	})
 	if err == nil {

@@ -11,11 +11,11 @@ unsigned char runReaderCb(c_reader c_reader, int teo, char *addr, void *data,
 
 // API reader type
 typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen,
-                                      char *err);
+                                      char *err, void *user_data);
 // API reader
 unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data,
-                             int dataLen, char *err) {
-  return c_reader(teoApi, data, dataLen, err);
+                             int dataLen, char *err, void * user_data) {
+  return c_reader(teoApi, data, dataLen, err, user_data);
 }
 
 // safe_printf format string

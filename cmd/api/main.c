@@ -72,14 +72,15 @@ int main() {
 
   // Send messages to api echo server
   for (;;) {
-    u_char cmd = 129;
+    // u_char cmd = 129;
+    char *cmd = "hello";
     char *msg = "Hello from teonet-c!";
-    printf("send command %d message '%s' to %s\n", cmd, msg, apiServer);
-    teoApiSendCmdToCb(apicli, cmd, msg, strlen(msg), &api_reader);
+    printf("send command '%s' message '%s' to %s\n", cmd, msg, apiServer);
+    teoApiSendCmdToStrCb(apicli, cmd, msg, strlen(msg), &api_reader, NULL);
     sleep(3);
   }
 
-  // In this example we loop forever in send message. If your application
+  // In this example we rloop forever in send message. If your application
   // does not use forever loop like this than you can use the teoWaitForever
   // func teoWaitForever(teo);
 
