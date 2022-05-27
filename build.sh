@@ -33,19 +33,19 @@ cd ../..
 # cmd/api/teoapi-c
 
 # Build echo server
-cd cmd/echoserve
-rm teoechoerve-c
-gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoechoerve-c
+cd cmd/echo-serve
+rm teoecho-serve-c
+gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoecho-serve-c
 cd ../..
 
 # Run echo server
-# cmd/echoserve/teoechoerve-c
+# cmd/echo-serve/teoecho-serve-c
 
 # Build command server
-cd cmd/commandserve
-rm teocommandserve-c
-gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommandserve-c
+cd cmd/command-serve
+rm teocommand-serve-c
+gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommand-serve-c
 cd ../..
 
 # Run command server
-cmd/commandserve/teocommandserve-c
+# cmd/command-serve/teocommand-serve-c

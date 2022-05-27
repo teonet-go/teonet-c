@@ -15,7 +15,7 @@
 #include "../../lib/libteonet.h"
 
 char *appName = "Teonet command server C sample application";
-char *appShort = "teocommandserve-c";
+char *appShort = "teocommand-serve-c";
 
 // reader is a teonet channels callback function
 unsigned char reader(int teo, char *addr, void *data, int dataLen,
