@@ -9,22 +9,23 @@ import (
 
 // Create teonet-c connections holder
 func newTeonetC() *teonetC {
-	return &teonetC{m: make(map[C.int]*teonet.Teonet)}
+	return &teonetC{m: make(map[C.int]interface{})}
 }
 
 var teoc = newTeonetC()
 
 // teonetC store teonet connections in map
 type teonetC struct {
-	m   map[C.int]*teonet.Teonet
+	m   map[C.int]interface{}
 	key C.int
 	sync.RWMutex
 }
 
-// add teonet connection and return connection key
-func (t *teonetC) add(teo *teonet.Teonet) C.int {
+// add teonet connection or teoent api interface and return connection key
+func (t *teonetC) add(teo interface{}) C.int {
 	t.Lock()
 	defer t.Unlock()
+
 	t.key += 1
 	t.m[t.key] = teo
 
@@ -32,10 +33,41 @@ func (t *teonetC) add(teo *teonet.Teonet) C.int {
 }
 
 // get teonet connection by key
-func (t *teonetC) get(teoKey C.int) (teo *teonet.Teonet, c_ok C.uchar) {
-	teo, ok := t.m[teoKey]
-	if ok {
+func (t *teonetC) getTeo(teoKey C.int) (teo *teonet.Teonet, c_ok C.uchar) {
+	t.RLock()
+	defer t.RUnlock()
+
+	i, ok := t.m[teoKey]
+	if !ok {
+		// c_ok = 0
+		return
+	}
+	switch v := i.(type) {
+	case *teonet.Teonet:
 		c_ok = 1
+		teo = v
+	default:
+		// c_ok = 0
+	}
+	return
+}
+
+// get teonet api client interface by key
+func (t *teonetC) getTeoApi(teoKey C.int) (teo *teonet.APIClient, c_ok C.uchar) {
+	t.RLock()
+	defer t.RUnlock()
+
+	i, ok := t.m[teoKey]
+	if !ok {
+		// c_ok = 0
+		return
+	}
+	switch v := i.(type) {
+	case *teonet.APIClient:
+		c_ok = 1
+		teo = v
+	default:
+		// c_ok = 0
 	}
 	return
 }

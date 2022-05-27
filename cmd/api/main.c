@@ -16,25 +16,19 @@
 
 char *appName = "Teonet echo api client C sample application";
 char *appShort = "teoapi-c";
-// char *echoComServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 char *apiServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
-// reader is a teonet channels callback function
-unsigned char reader(int teo, char *addr, void *data, int dataLen,
-                     unsigned char ev) {
-
-  // Check teonet event
-  if (ev != teoEvData()) {
-    return 0;
-  }
+// api_reader is a teonet api callback function
+void api_reader(int apicli, void *data, int dataLen, char *err) {
 
   // The safe_printf() function must be call in reader before any printf()
   // function to safe printf() in multithreading application
   safe_printf();
 
+  char *address = teoApiAddress(apicli);
   printf("got data: '%s', data len: %d, from: %s\n\n", (char *)data, dataLen,
-         addr);
-  return 1;
+         address);
+  free(address);
 }
 
 int main() {
@@ -70,8 +64,8 @@ int main() {
   printf("Successfully connected to: %s\n\n", apiServer);
 
   // Create Teonet API client interface
-  void *apicli = teoApiClientNew(teo, apiServer);
-  if (apicli == NULL) {
+  int apicli = teoApiClientNew(teo, apiServer);
+  if (!apicli) {
     printf("can't create api interface\n");
     return 1;
   }
@@ -81,7 +75,7 @@ int main() {
     u_char cmd = 129;
     char *msg = "Hello from teonet-c!";
     printf("send command %d message '%s' to %s\n", cmd, msg, apiServer);
-    teoSendCmdTo(teo, apiServer, cmd, msg, strlen(msg));
+    teoApiSendCmdToCb(apicli, cmd, msg, strlen(msg), &api_reader);
     sleep(3);
   }
 

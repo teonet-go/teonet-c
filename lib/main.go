@@ -14,6 +14,9 @@ package main
 // typedef unsigned char (*c_reader)(int teo, char *addr, void* data, int dataLen, unsigned char ev);
 // unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data, int dataLen, unsigned char ev);
 //
+// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen, char *err);
+// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err);
+//
 // void safe_printf();
 //
 import "C"
@@ -75,7 +78,7 @@ func teoNew(c_appShort *C.char) (teoKey C.int) {
 // teoConnect connect to teonet, return true if ok
 //export teoConnect
 func teoConnect(c_teo C.int) (ok C.uchar) {
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -89,7 +92,7 @@ func teoConnect(c_teo C.int) (ok C.uchar) {
 // teoAddress return string with Teonet address, should be freed after using
 //export teoAddress
 func teoAddress(c_teo C.int) (c_address *C.char) {
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -100,7 +103,7 @@ func teoAddress(c_teo C.int) (c_address *C.char) {
 // teoConnectTo connect to teonet peer, return true if ok
 //export teoConnectTo
 func teoConnectTo(c_teo C.int, c_address *C.char) (ok C.uchar) {
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -116,7 +119,7 @@ func teoConnectTo(c_teo C.int, c_address *C.char) (ok C.uchar) {
 // reader will receive data from peer
 //export teoConnectToCb
 func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok C.uchar) {
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -129,11 +132,16 @@ func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok
 		}
 
 		data := p.Data()
+		dataPtr := unsafe.Pointer(nil)
+		if data != nil {
+			dataPtr = unsafe.Pointer(&data[0])
+		}
 		addr := C.CString(c.Address())
+
 		if C.runReaderCb(C.c_reader(c_reader),
 			c_teo,
 			addr,
-			unsafe.Pointer(&data[0]),
+			dataPtr,
 			C.int(len(data)),
 			C.uchar(e.Event),
 		) != 0 {
@@ -153,7 +161,7 @@ func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok
 func teoSendTo(c_teo C.int, c_address *C.char, c_data unsafe.Pointer,
 	c_data_len C.int) (ok C.uchar) {
 
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -172,7 +180,7 @@ func teoSendTo(c_teo C.int, c_address *C.char, c_data unsafe.Pointer,
 func teoSendCmdTo(c_teo C.int, c_address *C.char, c_cmd C.uchar,
 	c_data unsafe.Pointer, c_data_len C.int) (ok C.uchar) {
 
-	teo, ok := teoc.get(c_teo)
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -196,8 +204,8 @@ func teoWaitForever(c_teo C.int) {
 // teoApiClientNew create and return pointer to new API Client interface, it
 // return nil at error
 //export teoApiClientNew
-func teoApiClientNew(c_teo C.int, c_address *C.char) (api unsafe.Pointer) {
-	teo, ok := teoc.get(c_teo)
+func teoApiClientNew(c_teo C.int, c_address *C.char) (teoApiKey C.int) {
+	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
 	}
@@ -206,7 +214,81 @@ func teoApiClientNew(c_teo C.int, c_address *C.char) (api unsafe.Pointer) {
 	if err != nil {
 		return
 	}
-	api = unsafe.Pointer(apicli)
-	// teoc.add(apicli)
+
+	return teoc.add(apicli)
+}
+
+// teoApiSendCmdTo send api command with data to teonet peer, return true if ok
+//export teoApiSendCmdTo
+func teoApiSendCmdTo(c_teoApi C.int, c_cmd C.uchar,
+	c_data unsafe.Pointer, c_data_len C.int) (ok C.uchar) {
+
+	apicli, ok := teoc.getTeoApi(c_teoApi)
+	if ok == 0 {
+		return
+	}
+
+	data := C.GoBytes(c_data, c_data_len)
+	cmd := byte(c_cmd)
+	_, err := apicli.SendTo(cmd, data)
+	if err == nil {
+		ok = 1
+	}
+
 	return
+}
+
+// teoApiSendCmdToCb send api command with data to teonet peer, return true if ok
+//export teoApiSendCmdToCb
+func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar,
+	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer) (ok C.uchar) {
+
+	apicli, ok := teoc.getTeoApi(c_teoApi)
+	if ok == 0 {
+		return
+	}
+
+	data := C.GoBytes(c_data, c_data_len)
+	cmd := byte(c_cmd)
+	_, err := apicli.SendTo(cmd, data, func(data []byte, err error) {
+
+		// Get error
+		var c_err *C.char
+		if err != nil {
+			c_err = C.CString(err.Error())
+		}
+
+		// Get data pointer
+		var dataPtr = unsafe.Pointer(nil)
+		if data != nil {
+			dataPtr = unsafe.Pointer(&data[0])
+		}
+
+		// Execute API reader callback
+		C.runAPIReaderCb(C.c_api_reader(c_reader),
+			c_teoApi,
+			dataPtr,
+			C.int(len(data)),
+			c_err,
+		)
+	})
+	if err == nil {
+		ok = 1
+	}
+
+	return
+}
+
+// teoApiAddress return string with Teonet API Client address, should be freed
+// after using
+//export teoApiAddress
+func teoApiAddress(c_teoApi C.int) (c_address *C.char) {
+
+	apicli, ok := teoc.getTeoApi(c_teoApi)
+	if ok == 0 {
+		return
+	}
+
+	address := apicli.Address()
+	return C.CString(address)
 }
