@@ -86,6 +86,18 @@ public:
     return sendTo(address, (void *)c_msg, std::strlen(c_msg));
   }
 
+  // Send command with data to teonet peer, return true if ok
+  bool sendCmdTo(std::string address, unsigned char cmd, void *data,
+                 int dataLength) {
+    return teoSendCmdTo(teo, (char *)address.c_str(), cmd, data, dataLength);
+  }
+
+  // Send command with string to teonet peer, return true if ok
+  bool sendCmdTo(std::string address, unsigned char cmd, std::string message) {
+    const char *c_msg = message.c_str();
+    return sendCmdTo(address, cmd, (void *)c_msg, std::strlen(c_msg));
+  }
+
   // Get Teonet Event Data constant
   unsigned char evData() { return teoEvData(); }
 
