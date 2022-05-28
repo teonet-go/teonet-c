@@ -8,17 +8,43 @@
 //
 package main
 
-// #include <stdio.h>
+// The comment block below is cgo comments. It contains includes, type
+// definitions and function definitions which copy to the Teonet-c library
+// include file during go build. This definitions and code used in this go code.
+// Be careful when edit this comments.
+
+//// CGO block
+//
+//// #include <stdio.h>
 // #include <stdlib.h>
 //
-// typedef unsigned char (*c_reader)(int teo, char *addr, void *data, int dataLen, unsigned char ev, void *user_data);
-// unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data, int dataLen, unsigned char ev, void *user_data);
+//// Teonet main C reader
+// typedef unsigned char (*c_reader)(int teo, char *addr, void *data,
+//			int dataLen, unsigned char ev, void *user_data);
+// unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data,
+//			int dataLen, unsigned char ev, void *user_data);
 //
-// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen, char *err, void *user_data);
-// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err, void *user_data);
+//// Teonet API C reader
+// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen,
+//			char *err, void *user_data);
+// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data,
+//			int dataLen, char *err, void *user_data);
 //
-// void safe_printf();
-// void *teoParseCmd(void *c_data, int c_data_len, unsigned char *c_cmd, int *c_cmd_data_len);
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
+//
+//// safe_printf safe printf in mulithreading appliction. Teonet-c run in
+//// multithread mode
+// extern void safe_printf();
+//
+//// teoParseCmd parse input data to command and data
+// extern void *teoParseCmd(void *c_data, int c_data_len, unsigned char *c_cmd,
+//			int *c_cmd_data_len);
+//
+// #ifdef __cplusplus
+// }
+// #endif
 //
 import "C"
 import (
