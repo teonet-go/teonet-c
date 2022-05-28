@@ -11,24 +11,6 @@ const char *appName = "Teonet echo client C++ sample application";
 const char *appShort = "teoecho-cpp";
 const char *echoServer = "dBTgSEHoZ3XXsOqjSkOTINMARqGxHaXIDxl";
 
-// reader is a teonet channels callback function
-// unsigned char reader(int teo, char *addr, void *data, int dataLen,
-//                      unsigned char ev) {
-
-//   // Check teonet event
-//   if (ev != teoEvData()) {
-//     return 0;
-//   }
-
-//   // The safe_printf() function must be call in reader before any printf()
-//   // function to safe printf() in multithreading application
-//   // safe_printf();
-
-//   printf("got data: '%s', data len: %d, from: %s\n\n", (char *)data, dataLen,
-//          addr);
-//   return 1;
-// }
-
 bool reader2(Teonet &teo, char *addr, void *data, int dataLen,
              unsigned char ev) {
 
