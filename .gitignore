@@ -3,5 +3,9 @@ teoecho-c
 teocommand-c
 teoecho-serve-c
 teocommand-serve-c
+
+teoecho-cpp
+teocommand-cpp
+
 lib/libteonet.h
 lib/libteonet.so
