@@ -11,8 +11,8 @@ package main
 // #include <stdio.h>
 // #include <stdlib.h>
 //
-// typedef unsigned char (*c_reader)(int teo, char *addr, void* data, int dataLen, unsigned char ev);
-// unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data, int dataLen, unsigned char ev);
+// typedef unsigned char (*c_reader)(int teo, char *addr, void *data, int dataLen, unsigned char ev, void *user_data);
+// unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data, int dataLen, unsigned char ev, void *user_data);
 //
 // typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen, char *err, void *user_data);
 // unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data, int dataLen, char *err, void *user_data);
@@ -102,6 +102,7 @@ func _teoNew(c_appShort *C.char, c_reader unsafe.Pointer) (c_teo C.int) {
 			dataPtr,
 			C.int(len(data)),
 			C.uchar(e.Event),
+			nil,
 		) != 0 {
 			processed = true
 		}
@@ -164,10 +165,15 @@ func teoConnectTo(c_teo C.int, c_address *C.char) (ok C.uchar) {
 	return
 }
 
-// teoConnectToCb connect to teonet peer with reader callback, return true if ok
-// reader will receive data from peer
+// teoConnectToCb connect to teonet peer with reader callback, return true if ok.
+// The reader will receive data from peer
 //export teoConnectToCb
-func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok C.uchar) {
+func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer,
+	c_user_data unsafe.Pointer) (ok C.uchar) {
+
+	if c_reader == nil {
+		return teoConnectTo(c_teo, c_address)
+	}
 	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
@@ -193,6 +199,7 @@ func teoConnectToCb(c_teo C.int, c_address *C.char, c_reader unsafe.Pointer) (ok
 			dataPtr,
 			C.int(len(data)),
 			C.uchar(e.Event),
+			c_user_data,
 		) != 0 {
 			processed = true
 		}

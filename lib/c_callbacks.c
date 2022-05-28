@@ -2,11 +2,11 @@
 
 // Main reader type
 typedef unsigned char (*c_reader)(int teo, char *addr, void *data, int dataLen,
-                                  unsigned char ev);
+                                  unsigned char ev, void *user_data);
 // Main reader
 unsigned char runReaderCb(c_reader c_reader, int teo, char *addr, void *data,
-                          int dataLen, unsigned char ev) {
-  return c_reader(teo, addr, data, dataLen, ev);
+                          int dataLen, unsigned char ev, void *user_data) {
+  return c_reader(teo, addr, data, dataLen, ev, user_data);
 }
 
 // API reader type

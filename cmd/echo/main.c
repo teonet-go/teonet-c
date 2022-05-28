@@ -60,7 +60,7 @@ int main() {
   printf("Teonet address: %s\n", address);
 
   // Connect to teonet echo server
-  ok = teoConnectToCb(teo, echoServer, &reader);
+  ok = teoConnectToCb(teo, echoServer, &reader, NULL);
   if (!ok) {
     printf("can't connect to echo server\n");
     return 1;
