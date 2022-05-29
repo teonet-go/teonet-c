@@ -11,14 +11,46 @@
 #include <string>
 
 class Teonet;
+class Teoapi;
 
+// Main C++ Teonet reader type
 typedef bool (*cpp_reader)(Teonet &teo, char *addr, void *data, int dataLen,
                            unsigned char ev);
+
+// Teonet API client class
+class Teoapi {
+private:
+  int api;
+
+public:
+  // Constructor
+  Teoapi(int c_teo, std::string address) {
+    char *c_appddress = (char *)address.c_str();
+    api = teoApiClientNew(c_teo, c_appddress);
+  }
+
+  // Send api command with data to teonet peer, return true if ok
+  bool sendCmdTo(std::string s_cmd, void *c_data, int c_data_len,
+                 void *c_reader, void *user_data = NULL) {
+    return teoApiSendCmdToStrCb(api, (char *)s_cmd.c_str(), c_data, c_data_len,
+                                c_reader, user_data);
+  }
+
+  // Send api command with string to teonet peer, return true if ok
+  bool sendCmdTo(std::string s_cmd, std::string msg, void *c_reader,
+                 void *user_data = NULL) {
+    const char *c_data = msg.c_str();
+    return sendCmdTo(s_cmd, (void *)c_data, std::strlen(c_data), c_reader,
+                     user_data);
+  }
+};
 
 class Teonet {
 private:
   int teo;
   cpp_reader reader;
+
+  int getTeo() { return teo; }
 
 public:
   // Constructor
@@ -96,6 +128,12 @@ public:
   bool sendCmdTo(std::string address, unsigned char cmd, std::string message) {
     const char *c_msg = message.c_str();
     return sendCmdTo(address, cmd, (void *)c_msg, std::strlen(c_msg));
+  }
+
+  // Create Teonet API client
+  Teoapi *newAPIClient(std::string address) {
+    Teoapi *api = new Teoapi(getTeo(), address);
+    return api;
   }
 
   // Get Teonet Event Data constant

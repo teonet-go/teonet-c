@@ -54,6 +54,10 @@ build: build-lib
 	cd cmd/cpp/command && gcc main.cpp -L$(LIB) -lteonet -I$(INC) -lstdc++ -o teocommand-cpp
 
 	#
+	# Build C++ api client
+	cd cmd/cpp/api && gcc main.cpp -L$(LIB) -lteonet -I$(INC) -lstdc++ -o teoapi-cpp
+
+	#
 
 ## clean: Clean remove all file maked by build commands
 clean:

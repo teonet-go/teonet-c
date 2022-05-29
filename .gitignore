@@ -6,6 +6,7 @@ teocommand-serve-c
 
 teoecho-cpp
 teocommand-cpp
+teoapi-cpp
 
 lib/libteonet.h
 lib/libteonet.so
