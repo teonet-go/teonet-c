@@ -11,7 +11,7 @@
 #include "../teonet.hpp"
 #include <unistd.h>
 
-const char *appName = "Teonet echo command client C++ sample application";
+const char *appName = "Teonet echo api client C++ sample application";
 const char *appShort = "teoapi-cpp";
 const char *echoApiServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
