@@ -1,21 +1,29 @@
+// Copyright 2021-22 Kirill Scherba <kirill@scherba.ru>. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Teonet C library callabacks module
+//
+#include "c_callbacks.h"
 #include <stdio.h>
 
-// Main reader type
-typedef unsigned char (*c_reader)(int teo, char *addr, void *data, int dataLen,
-                                  unsigned char ev, void *user_data);
 // Main reader
 unsigned char runReaderCb(c_reader c_reader, int teo, char *addr, void *data,
                           int dataLen, unsigned char ev, void *user_data) {
   return c_reader(teo, addr, data, dataLen, ev, user_data);
 }
 
-// API reader type
-typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen,
-                                      char *err, void *user_data);
-// API reader
+// API client reader
 unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data,
                              int dataLen, char *err, void *user_data) {
   return c_reader(teoApi, data, dataLen, err, user_data);
+}
+
+// API server reader
+void *runAPIsReaderCb(c_api_s_reader c_reader, int teoApiCmd, char *addr,
+                      void *data, int dataLen, void *user_data,
+                      int *outDataLen) {
+  return c_reader(teoApiCmd, addr, data, dataLen, user_data, outDataLen);
 }
 
 // safe_printf safe printf in mulithreading appliction. Teonet-c run in

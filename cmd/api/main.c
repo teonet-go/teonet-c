@@ -79,7 +79,7 @@ int main() {
     sleep(3);
   }
 
-  // In this example we rloop forever in send message. If your application
+  // In this example we loop forever in send message. If your application
   // does not use forever loop like this than you can use the teoWaitForever
   // func teoWaitForever(teo);
 

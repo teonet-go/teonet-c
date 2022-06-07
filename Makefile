@@ -45,6 +45,10 @@ build: build-lib
 	cd cmd/command-serve && gcc main.c -L$(LIB) -lteonet -I$(INC) -o teocommand-serve-c
 
 	#
+	# Build C api server
+	cd cmd/api-serve && gcc main.c -L$(LIB) -lteonet -I$(INC) -o teoapi-serve-c
+
+	#
 	# C++ examples
 	# Build C++ echo client
 	cd cmd/cpp/echo && gcc main.cpp -L$(LIB) -lteonet -I$(INC) -lstdc++ -o teoecho-cpp

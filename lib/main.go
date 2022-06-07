@@ -15,36 +15,8 @@ package main
 
 //// CGO block
 //
-//// #include <stdio.h>
+// #include "c_callbacks.h"
 // #include <stdlib.h>
-//
-//// Teonet main C reader
-// typedef unsigned char (*c_reader)(int teo, char *addr, void *data,
-//			int dataLen, unsigned char ev, void *user_data);
-// unsigned char runReaderCb(c_reader cb, int teo, char *addr, void* data,
-//			int dataLen, unsigned char ev, void *user_data);
-//
-//// Teonet API C reader
-// typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen,
-//			char *err, void *user_data);
-// unsigned char runAPIReaderCb(c_api_reader c_reader, int teoApi, void *data,
-//			int dataLen, char *err, void *user_data);
-//
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-//
-//// safe_printf safe printf in mulithreading appliction. Teonet-c run in
-//// multithread mode
-// extern void safe_printf();
-//
-//// teoParseCmd parse input data to command and data
-// extern void *teoParseCmd(void *c_data, int c_data_len, unsigned char *c_cmd,
-//			int *c_cmd_data_len);
-//
-// #ifdef __cplusplus
-// }
-// #endif
 //
 import "C"
 import (
@@ -305,7 +277,7 @@ func teoApiClientNew(c_teo C.int, c_address *C.char) (teoApiKey C.int) {
 func teoApiSendCmdTo(c_teoApi C.int, c_cmd C.uchar,
 	c_data unsafe.Pointer, c_data_len C.int) (ok C.uchar) {
 
-	apicli, ok := teoc.getTeoApi(c_teoApi)
+	apicli, ok := teoc.getTeoApiCli(c_teoApi)
 	if ok == 0 {
 		return
 	}
@@ -345,7 +317,7 @@ func _teoApiSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
 	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer,
 	user_data unsafe.Pointer) (ok C.uchar) {
 
-	apicli, ok := teoc.getTeoApi(c_teoApi)
+	apicli, ok := teoc.getTeoApiCli(c_teoApi)
 	if ok == 0 {
 		return
 	}
@@ -386,11 +358,202 @@ func _teoApiSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
 //export teoApiAddress
 func teoApiAddress(c_teoApi C.int) (c_address *C.char) {
 
-	apicli, ok := teoc.getTeoApi(c_teoApi)
+	apicli, ok := teoc.getTeoApiCli(c_teoApi)
 	if ok == 0 {
 		return
 	}
 
 	address := apicli.Address()
 	return C.CString(address)
+}
+
+// teoApiNew create and return pointer to new API interface, it return nil at
+// error
+//export teoApiNew
+func teoApiNew(c_teo C.int, c_appName, c_appShort, c_appLong, c_appVersion *C.char) (teoApiKey C.int) {
+	teo, ok := teoc.getTeo(c_teo)
+	if ok == 0 {
+		return
+	}
+	appName := C.GoString(c_appName)
+	appShort := C.GoString(c_appShort)
+	appLong := C.GoString(c_appLong)
+	appVersion := C.GoString(c_appVersion)
+	api := teo.NewAPI(appName, appShort, appLong, appVersion)
+
+	return teoc.add(api)
+}
+
+// cmdApiType
+type cmdApiType struct {
+	c_api C.int
+	*teonet.APIData
+}
+
+// teoMakeAPI2 is Teonet API builder
+//export teoMakeAPI2
+func teoMakeAPI2(c_api C.int) (teoApiDataKey C.int) {
+
+	cmdApi := new(cmdApiType)
+	cmdApi.c_api = c_api
+	cmdApi.APIData = teonet.MakeAPI2()
+
+	return teoc.add(cmdApi)
+}
+
+// teoApiSetCmd set APIData command number
+//export teoApiSetCmd
+func teoApiSetCmd(c_cmdApi C.int, cmd C.int) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	cmdApi.SetCmd(129)
+}
+
+// teoApiSetName set APIData command name
+//export teoApiSetName
+func teoApiSetName(c_cmdApi C.int, c_name *C.char) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	name := C.GoString(c_name)
+	cmdApi.SetName(name)
+}
+
+// teoApiSetShort set APIData command short description
+//export teoApiSetShort
+func teoApiSetShort(c_cmdApi C.int, c_short *C.char) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	short := C.GoString(c_short)
+	cmdApi.SetShort(short)
+}
+
+// teoApiSetUsage set APIData command usage
+//export teoApiSetUsage
+func teoApiSetUsage(c_cmdApi C.int, c_usage *C.char) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	usage := C.GoString(c_usage)
+	cmdApi.SetUsage(usage)
+}
+
+// teoApiSetReturn set APIData command return description
+//export teoApiSetReturn
+func teoApiSetReturn(c_cmdApi C.int, c_return *C.char) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	ret := C.GoString(c_return)
+	cmdApi.SetReturn(ret)
+}
+
+// API answer mode constants
+//export teoApiAnswerData
+func teoApiAnswerData() C.int { return C.int(teonet.DataAnswer) }
+
+//export teoApiAnswerCmd
+func teoApiAnswerCmd() C.int { return C.int(teonet.CmdAnswer) }
+
+//export teoApiAnswerPacketID
+func teoApiAnswerPacketID() C.int { return C.int(teonet.PacketIDAnswer) }
+
+//export teoApiAnswerNo
+func teoApiAnswerNo() C.int { return C.int(teonet.NoAnswer) }
+
+// teoApiSetAnswerMode set APIData command answer mode
+//export teoApiSetAnswerMode
+func teoApiSetAnswerMode(c_cmdApi C.int, c_answerMode C.int) {
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+	cmdApi.SetAnswerMode(teonet.APIanswerMode(c_answerMode))
+}
+
+// teoApiSetReader add teonet api reader. Reader shoud allocate output data
+// by malloc function, it will be free by Teonet-C Library after reader 
+// return in
+//export teoApiSetReader
+func teoApiSetReader(c_cmdApi C.int, c_reader unsafe.Pointer) {
+
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+
+	api, ok := teoc.getTeoApi(cmdApi.c_api)
+	if ok == 0 {
+		return
+	}
+
+	cmdApi.SetReader(func(c *teonet.Channel, p *teonet.Packet, data []byte) bool {
+
+		// Prepare params
+		c_data := unsafe.Pointer(nil)
+		if data != nil {
+			c_data = unsafe.Pointer(&data[0])
+		}
+		var c_data_len = C.int(len(data))
+		c_addr := C.CString(c.Address())
+
+		// Execute API server reader callback
+		var c_outdata_len C.int
+		c_outData := C.runAPIsReaderCb(C.c_api_s_reader(c_reader), c_cmdApi,
+			c_addr, c_data, c_data_len, nil, &c_outdata_len,
+		)
+		C.free(unsafe.Pointer(c_addr))
+
+		// Send API server answer
+		outData := C.GoBytes(c_outData, c_outdata_len)
+		api.SendAnswer(cmdApi, c, outData, p)
+
+		// Free output data memory
+		if c_outData != nil {
+			C.free(c_outData)
+		}
+
+		return true
+	})
+}
+
+// teoApiAdd add api command to API interface
+//export teoApiAdd
+func teoApiAdd(c_cmdApi C.int) {
+
+	cmdApi, ok := teoc.getTeoApiCmd(c_cmdApi)
+	if ok == 0 {
+		return
+	}
+
+	api, ok := teoc.getTeoApi(cmdApi.c_api)
+	if ok == 0 {
+		return
+	}
+
+	api.Add(cmdApi)
+}
+
+// teoAddApiReader add API reader to teonet
+//export teoAddApiReader
+func teoAddApiReader(c_teo C.int, api_c C.int) {
+
+	teo, ok := teoc.getTeo(c_teo)
+	if ok == 0 {
+		return
+	}
+
+	api, ok := teoc.getTeoApi(api_c)
+	if ok == 0 {
+		return
+	}
+
+	teo.AddReader(api.Reader())
 }

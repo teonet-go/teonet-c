@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Teonet C library C++ definition module
+//
 //#pragma once
 #ifndef THIS_TEONET_H
 #define THIS_TEONET_H

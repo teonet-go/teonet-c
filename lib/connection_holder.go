@@ -53,17 +53,57 @@ func (t *teonetC) getTeo(teoKey C.int) (teo *teonet.Teonet, c_ok C.uchar) {
 }
 
 // get teonet api client interface by key
-func (t *teonetC) getTeoApi(teoKey C.int) (teo *teonet.APIClient, c_ok C.uchar) {
+func (t *teonetC) getTeoApiCli(key C.int) (teo *teonet.APIClient, c_ok C.uchar) {
 	t.RLock()
 	defer t.RUnlock()
 
-	i, ok := t.m[teoKey]
+	i, ok := t.m[key]
 	if !ok {
 		// c_ok = 0
 		return
 	}
 	switch v := i.(type) {
 	case *teonet.APIClient:
+		c_ok = 1
+		teo = v
+	default:
+		// c_ok = 0
+	}
+	return
+}
+
+// get teonet api interface by key
+func (t *teonetC) getTeoApi(key C.int) (teo *teonet.API, c_ok C.uchar) {
+	t.RLock()
+	defer t.RUnlock()
+
+	i, ok := t.m[key]
+	if !ok {
+		// c_ok = 0
+		return
+	}
+	switch v := i.(type) {
+	case *teonet.API:
+		c_ok = 1
+		teo = v
+	default:
+		// c_ok = 0
+	}
+	return
+}
+
+// get teonet api command data by key
+func (t *teonetC) getTeoApiCmd(key C.int) (teo *cmdApiType, c_ok C.uchar) {
+	t.RLock()
+	defer t.RUnlock()
+
+	i, ok := t.m[key]
+	if !ok {
+		// c_ok = 0
+		return
+	}
+	switch v := i.(type) {
+	case *cmdApiType:
 		c_ok = 1
 		teo = v
 	default:
