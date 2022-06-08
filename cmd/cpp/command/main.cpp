@@ -8,7 +8,7 @@
 //
 // build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teocommand-c
 //
-#include "../teonet.hpp"
+#include "../../../lib/libteonet.hpp"
 #include <unistd.h>
 
 const char *appName = "Teonet echo command client C++ sample application";

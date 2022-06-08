@@ -63,7 +63,7 @@ int main() {
   printf("Successfully connected to: %s\n\n", apiServer);
 
   // Create Teonet API client interface
-  int apicli = teoApiClientNew(teo, apiServer);
+  int apicli = teoApicliNew(teo, apiServer);
   if (!apicli) {
     printf("can't create api interface\n");
     return 1;
@@ -75,7 +75,7 @@ int main() {
     char *cmd = "hello";
     char *msg = "Hello from teonet-c!";
     printf("send command '%s' message '%s' to %s\n", cmd, msg, apiServer);
-    teoApiSendCmdToStrCb(apicli, cmd, msg, strlen(msg), &api_reader, NULL);
+    teoApicliSendCmdToStrCb(apicli, cmd, msg, strlen(msg), &api_reader, NULL);
     sleep(3);
   }
 

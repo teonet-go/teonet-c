@@ -255,10 +255,10 @@ func teoWaitForever(c_teo C.int) {
 	select {}
 }
 
-// teoApiClientNew create and return pointer to new API Client interface, it
+// teoApicliNew create and return pointer to new API Client interface, it
 // return nil at error
-//export teoApiClientNew
-func teoApiClientNew(c_teo C.int, c_address *C.char) (teoApiKey C.int) {
+//export teoApicliNew
+func teoApicliNew(c_teo C.int, c_address *C.char) (teoApiKey C.int) {
 	teo, ok := teoc.getTeo(c_teo)
 	if ok == 0 {
 		return
@@ -292,28 +292,31 @@ func teoApiSendCmdTo(c_teoApi C.int, c_cmd C.uchar,
 	return
 }
 
-// teoApiSendCmdToCb send api command with data to teonet peer, return true if ok
-//export teoApiSendCmdToCb
-func teoApiSendCmdToCb(c_teoApi C.int, c_cmd C.uchar, c_data unsafe.Pointer,
+// teoApicliSendCmdToCb send api client command with data to teonet peer, return
+// true if ok
+//export teoApicliSendCmdToCb
+func teoApicliSendCmdToCb(c_teoApi C.int, c_cmd C.uchar, c_data unsafe.Pointer,
 	c_data_len C.int, c_reader unsafe.Pointer,
 	user_data unsafe.Pointer) (ok C.uchar) {
-	return _teoApiSendCmdToCb(c_teoApi, byte(c_cmd), c_data, c_data_len, c_reader,
+	return _teoApicliSendCmdToCb(c_teoApi, byte(c_cmd), c_data, c_data_len, c_reader,
 		user_data)
 }
 
-// teoApiSendCmdToStrCb send api command with data to teonet peer, return true if ok
-//export teoApiSendCmdToStrCb
-func teoApiSendCmdToStrCb(c_teoApi C.int, c_cmd *C.char, c_data unsafe.Pointer,
+// teoApicliSendCmdToStrCb send api client command with data to teonet peer,
+// return true if ok
+//export teoApicliSendCmdToStrCb
+func teoApicliSendCmdToStrCb(c_teoApi C.int, c_cmd *C.char, c_data unsafe.Pointer,
 	c_data_len C.int, c_reader unsafe.Pointer,
 	user_data unsafe.Pointer) (ok C.uchar) {
 	cmd := C.GoString(c_cmd)
-	return _teoApiSendCmdToCb(c_teoApi, cmd, c_data, c_data_len, c_reader,
+	return _teoApicliSendCmdToCb(c_teoApi, cmd, c_data, c_data_len, c_reader,
 		user_data)
 }
 
-// _teoApiSendCmdToStrCb generic send api command with data to teonet peer where
+// _teoApicliSendCmdToStrCb generic send api client command with data to teonet
+// peer where
 // cmd may be byte or string, return true if ok
-func _teoApiSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
+func _teoApicliSendCmdToCb[CMD byte | string](c_teoApi C.int, cmd CMD,
 	c_data unsafe.Pointer, c_data_len C.int, c_reader unsafe.Pointer,
 	user_data unsafe.Pointer) (ok C.uchar) {
 
@@ -479,7 +482,7 @@ func teoApiSetAnswerMode(c_cmdApi C.int, c_answerMode C.int) {
 }
 
 // teoApiSetReader add teonet api reader. Reader shoud allocate output data
-// by malloc function, it will be free by Teonet-C Library after reader 
+// by malloc function, it will be free by Teonet-C Library after reader
 // return in
 //export teoApiSetReader
 func teoApiSetReader(c_cmdApi C.int, c_reader unsafe.Pointer) {

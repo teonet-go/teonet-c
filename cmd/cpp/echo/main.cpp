@@ -4,7 +4,7 @@
 //   -o teoecho-cpp
 //
 
-#include "../teonet.hpp"
+#include "../../../lib/libteonet.hpp"
 #include <unistd.h>
 
 const char *appName = "Teonet echo client C++ sample application";

@@ -8,7 +8,7 @@
 //
 // build: gcc main.c `pwd`/../../lib/libteonet.so -I../../lib -o teoapi-c
 //
-#include "../teonet.hpp"
+#include "../../../lib/libteonet.hpp"
 #include <unistd.h>
 
 const char *appName = "Teonet echo api client C++ sample application";
@@ -72,7 +72,7 @@ int main() {
   printf("Successfully connected to: %s\n\n", echoApiServer);
 
   // Create Teonet API client interface
-  Teoapi *apicli = teo.newAPIClient(echoApiServer);
+  Teoapicli *apicli = teo.newAPIClient(echoApiServer);
   if (!apicli) {
     printf("can't create Api Client\n");
     return 1;
