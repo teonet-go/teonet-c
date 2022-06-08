@@ -1,0 +1,63 @@
+name: Publish Teonet C library ded and rpm packages to Github Packages
+
+on:
+    push:
+    # Sequence of patterns matched against refs/tags
+    tags: 
+      - v*.*.*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Setup Build essential
+        run: sudo apt update && sudo apt install build-essential
+
+      - name: Build Teonet C library and examples
+        run: make build
+
+      - name: Setut nfpm
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+
+      - name: Build rpm package
+        run: nfpm pkg --packager rpm --target ./
+
+      - name: Build deb package
+        run: nfpm pkg --packager deb --target ./
+
+      # - name: Branch name
+      #   id: branch_name
+      #   run: |
+      #     echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+      #     echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+      #     echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+
+      # - name: Set name, branch and tag to environment
+      #   env:
+      #     SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+      #     SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+      #     SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+      #   run: |
+      #     echo $SOURCE_NAME
+      #     echo $SOURCE_BRANCH
+      #     echo $SOURCE_TAG
+
+      # - name: Publish Teonet C library ded and rpm packages to Github Packages
+      #   env:
+      #     VERSION: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+      #   run: |
+      #       docker login docker.pkg.github.com -u $USER -p $PACKAGES_TOKEN
+      #       echo ""
+      #       docker tag $NAME docker.pkg.github.com/kirill-scherba/teonet-go/$NAME:${VERSION:1}
+      #       docker push docker.pkg.github.com/kirill-scherba/teonet-go/$NAME:${VERSION:1}
+      #       echo ""
+      #       docker tag $NAME docker.pkg.github.com/kirill-scherba/teonet-go/$NAME:latest
+      #       docker push docker.pkg.github.com/kirill-scherba/teonet-go/$NAME:latest
+
