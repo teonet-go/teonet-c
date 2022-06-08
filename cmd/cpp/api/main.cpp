@@ -13,8 +13,7 @@
 
 const char *appName = "Teonet echo api client C++ sample application";
 const char *appShort = "teoapi-cpp";
-const char *echoApiServer =
-    "tPtG9OfULOseVu3TeoX6q5p4XKLJFbo5l6k"; // "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
+const char *echoApiServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
 // api_reader is a teonet api callback function
 void api_reader(int apicli, void *data, int dataLen, char *err) {

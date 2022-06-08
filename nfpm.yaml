@@ -1,0 +1,52 @@
+# nfpm example config file
+#
+# check https://nfpm.goreleaser.com/configuration for detailed usage
+#
+name: "teonet-c"
+arch: "amd64"
+platform: "linux"
+version: "v0.2.2"
+section: "default"
+priority: "extra"
+replaces:
+- foobar
+provides:
+- bar
+depends:
+- foo
+- bar
+recommends:
+- whatever
+suggests:
+- something-else
+conflicts:
+- not-foo
+- not-bar
+maintainer: "Kirill Scherba <kirill@scherba.ru>"
+description: |
+  FooBar is the great foo and bar software.
+    And this can be in multiple lines!
+vendor: "FooBarCorp"
+homepage: "http://example.com"
+license: "BSD"
+#changelog: "changelog.yaml"
+contents:
+- src: ./lib/libteonet.so
+  dst: /usr/lib/libteonet.so
+# - src: ./bar
+#   dst: /usr/local/bin/bar
+# - src: ./foobar.conf
+#   dst: /etc/foobar.conf
+#   type: config
+# - src: /usr/local/bin/foo
+#   dst: /sbin/foo
+#   type: symlink
+overrides:
+  rpm:
+    scripts:
+      # preinstall: ./scripts/preinstall.sh
+      # postremove: ./scripts/postremove.sh
+  deb:
+    scripts:
+      # postinstall: ./scripts/postinstall.sh
+      # preremove: ./scripts/preremove.sh
