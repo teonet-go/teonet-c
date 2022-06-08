@@ -12,3 +12,5 @@ teoapi-server-cpp
 
 lib/libteonet.h
 lib/libteonet.so
+
+/teonet-c*

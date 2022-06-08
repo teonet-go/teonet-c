@@ -9,30 +9,36 @@ version: "v0.2.2"
 section: "default"
 priority: "extra"
 replaces:
-- foobar
+# - foobar
 provides:
-- bar
+# - bar
 depends:
-- foo
-- bar
+# - foo
+# - bar
 recommends:
-- whatever
+# - whatever
 suggests:
-- something-else
+# - something-else
 conflicts:
-- not-foo
-- not-bar
+# - not-foo
+# - not-bar
 maintainer: "Kirill Scherba <kirill@scherba.ru>"
 description: |
-  FooBar is the great foo and bar software.
-    And this can be in multiple lines!
-vendor: "FooBarCorp"
-homepage: "http://example.com"
+  Teonet is designed to create client-server systems and build networks for 
+  server applications operating within a microservice architecture.
+vendor: "Teonet"
+homepage: "http://github.com/teonet-go/teonet-c"
 license: "BSD"
 #changelog: "changelog.yaml"
 contents:
-- src: ./lib/libteonet.so
-  dst: /usr/lib/libteonet.so
+  - src: ./lib/libteonet.so
+    dst: /usr/lib/libteonet.so
+  - src: ./lib/libteonet.h
+    dst: /usr/include/libteonet.h
+  - src: ./lib/libteonet.hpp
+    dst: /usr/include/libteonet.hpp
+  - src: ./lib/c_callbacks.h
+    dst: /usr/include/c_callbacks.h
 # - src: ./bar
 #   dst: /usr/local/bin/bar
 # - src: ./foobar.conf
