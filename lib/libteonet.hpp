@@ -24,12 +24,14 @@ typedef bool (*cpp_reader)(Teonet &teo, char *addr, void *data, int dataLen,
 // Teonet API command
 class TeoapiCommand {
 private:
-  int api;
+  // int api;
   int cmdApi;
 
 public:
   // Constructor
-  TeoapiCommand(int c_api) { api = c_api; }
+  TeoapiCommand(int c_cmdapi) { cmdApi = c_cmdapi; }
+
+  int getCmdApi() { return cmdApi; }
 
   // Set command number
   TeoapiCommand *setCmd(int cmd) {
@@ -107,7 +109,8 @@ public:
   }
 
   // Add api command
-  void add(int cmdApi) { teoApiAdd(cmdApi); }
+  // void add(int cmdApi) { teoApiAdd(cmdApi); }
+  void add(TeoapiCommand *cmdApi) { teoApiAdd(cmdApi->getCmdApi()); }
 };
 
 // Teonet API client class
@@ -143,14 +146,14 @@ private:
   int teo;
   cpp_reader reader;
 
-  int getTeo() { return teo; }
-
 public:
   // Constructor
   Teonet(std::string appShort) {
     char *c_appShort = (char *)appShort.c_str();
     teo = teoNew(c_appShort);
   }
+
+  int getTeo() { return teo; }
 
   // Get Teonet-c version
   std::string version() {

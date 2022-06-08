@@ -13,26 +13,8 @@
 
 const char *appName = "Teonet echo api client C++ sample application";
 const char *appShort = "teoapi-cpp";
-const char *echoApiServer = "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
-
-// reader is a teonet channels callback function
-// bool reader(Teonet &teo, char *addr, void *data, int dataLen,
-//             unsigned char ev) {
-
-//   // Check teonet event
-//   if (ev != teo.evData()) {
-//     return 0;
-//   }
-
-//   // The safe_printf() function must be call in reader before any printf()
-//   // function to safe printf() in multithreading application
-//   teo.safePrintf();
-
-//   printf("got data: '%s', data len: %d, from: %s\n\n", (char *)data, dataLen,
-//          addr);
-
-//   return 1;
-// }
+const char *echoApiServer =
+    "tPtG9OfULOseVu3TeoX6q5p4XKLJFbo5l6k"; // "WXJfYLDEtg6Rkm1OHm9I9ud9rR6qPlMH6NE";
 
 // api_reader is a teonet api callback function
 void api_reader(int apicli, void *data, int dataLen, char *err) {
@@ -82,9 +64,9 @@ int main() {
   for (;;) {
     // u_char cmd = 129;
     const char *cmd = "hello";
-    const char *msg = "Hello from teonet-c!";
+    const char *msg = "Hello from teonet-c++!";
     printf("send command '%s' message '%s' to %s\n", cmd, msg, echoApiServer);
-    apicli->sendCmdTo(cmd, msg, (void*)&api_reader);
+    apicli->sendCmdTo(cmd, msg, (void *)&api_reader);
     sleep(3);
   }
 

@@ -16,9 +16,6 @@ typedef unsigned char (*c_api_reader)(int teoApi, void *data, int dataLen,
                                       char *err, void *user_data);
 
 // API server reader type
-// typedef unsigned char (*c_api_s_reader)(int teoApi, void *c, void *p,
-//                                         void *data, int dataLen, char *err,
-//                                         void *user_data);
 typedef void *(*c_api_s_reader)(int cmdApi, char *addr, void *data, int dataLen,
                                 void *userdat, int *outDataLen);
 
