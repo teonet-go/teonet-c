@@ -36,7 +36,7 @@ The examples of this project copy Teonet-go examples functional. So look this pr
 
 ## Make library and examples
 
-To make Teonet-c library and from sources you need install `git` `go` `gcc` and `make` applications on you computer.
+To make Teonet-c library from sources you need install `git` `go` `gcc` and `make` applications on you computer.
 
 Clone this repository to you project folder:
 
